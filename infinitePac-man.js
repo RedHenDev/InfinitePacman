@@ -69,7 +69,7 @@ function setup(){
     }
     
     // AntBots!
-    for (let i = 0; i < 3; i++){
+    for (let i = 0; i < 30; i++){
         blinkies.push(new antBot(true,
         Math.random()*width*4-width*2,
         -height,Math.random()*4+0.3,true));
@@ -94,9 +94,9 @@ function setup(){
 
 function setupBoo(){
     
-    boo = new Pac(Math.round(width/2),
-                          Math.round(height/2),
-                          22);
+    boo = new Pac(  Math.round(width/2),
+                    Math.round(height/2),
+                    22);
     //robot.speak("Bubble boo is ready.");
     boo.bubblesON = false;
     boo.maxV = 14;
@@ -200,8 +200,16 @@ function draw(){
         blinkies[i].brain.
         setWayPoint(boo.myBod.bod.position.x,
                     boo.myBod.bod.position.y)
+        if (!blinkies[i].myBod.bod.isSleeping){
         blinkies[i].think();
         blinkies[i].render();
+        }
+        // When far away, sleep (so as not to
+        // fall through the terrain).
+        if (Math.abs(blinkies[i].myBod.bod.position.x
+            - boo.myBod.bod.position.x) > width/2){
+            blinkies[i].myBod.makeSleep(true);
+        } else blinkies[i].myBod.makeSleep(false);
     }
     
     RedHen_2DPhysics.updateObjs();
