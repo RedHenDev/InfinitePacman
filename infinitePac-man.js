@@ -34,6 +34,8 @@ let cloudTimer = 0;
 
 p5.disableFriendlyErrors = true;
 
+//const RP = require('RedHen_2DPhysics');
+
 function preload(){
     //robot = new p5.Speech();
     // Pick a random voice!
@@ -169,12 +171,16 @@ function draw(){
         toRemove = null;
     }
     
+  
+    
     boo.spawnBubbles();
     
     push();
     // Move 'camera' to centre on boo.
     translate(  -boo.myBod.bod.position.x+width/2,
                 -boo.myBod.bod.position.y+height/2);
+    
+     
     
     // Test sea...
     rectMode(CORNER);
@@ -199,6 +205,15 @@ function draw(){
     }
     
     RedHen_2DPhysics.updateObjs();
+    
+     // Pellet sine bob.
+//    for (p of bods){
+//        if (p.bod.label === 'pellet'){
+//            let newY = p.bod.position.y + Math.sin(frameCount*10/(p.id*2))*2.3;
+//            p.makePosition(p.bod.position.x,
+//            newY);
+//        }
+//    }
     
     boo.control();// NB. contains speedlimiter.
     boo.hitWaterCheck();

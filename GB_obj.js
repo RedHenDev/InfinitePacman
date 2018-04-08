@@ -247,7 +247,7 @@ class Pac extends SpaceBuddha{
         translate(  this.myBod.bod.position.x,
                     this.myBod.bod.position.y);
         
-        rotate(this.myBod.bod.angle);
+       // rotate(this.myBod.bod.angle);
         
         //ellipse(0,0,this.width);
 //        arc(0,0,this.width,this.width*1.01, 
@@ -262,14 +262,20 @@ class Pac extends SpaceBuddha{
       if (this.gape > 51)
         this.gape = 51;
  
+        let orientation = 0;
+        if (this.myBod.bod.velocity.x < 0){
+            orientation = PI;
+        }
+        
+        
       // Pac-mouth.
-      arc(0,0,this.width, this.width, radians(this.gape), radians(-this.gape),PIE);
+      arc(0,0,this.width, this.width, radians(this.gape)-orientation, radians(-this.gape)-orientation,PIE);
         
         // Eye.
-//        fill(0);
-//        strokeWeight(1);
-//        stroke(255,255);
-//        ellipse(0, -this.width/4, this.width/8);
+        fill(0);
+        strokeWeight(1);
+        stroke(255,255);
+        ellipse(0, -this.width/4, this.width/6);
         pop();
     }
     
