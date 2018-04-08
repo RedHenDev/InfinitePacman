@@ -273,9 +273,9 @@ class Pac extends SpaceBuddha{
         
         // Eye.
         fill(0);
-        strokeWeight(1);
-        stroke(255,255);
-        ellipse(0, -this.width/4, this.width/6);
+        strokeWeight(2);
+        stroke(255);
+        ellipse(0, -this.width/4, this.width/4);
         pop();
     }
     
