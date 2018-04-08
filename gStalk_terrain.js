@@ -389,7 +389,7 @@ class Gstalk{
         // First, see if slot is empty (null).
         if (objectSlots[id] == null){
         
-        if(this.myBody.bod.position.y < height*4 &&
+        if(this.myBody.bod.position.y < height*7 &&
           id % 5 === 0) {
             RedHen_2DPhysics.newObj('circle', this.myBody.bod.position.x, this.myBody.bod.position.y - 
             (64 - Math.random()*32) 
