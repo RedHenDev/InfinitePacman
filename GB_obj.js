@@ -237,6 +237,7 @@ class Pac extends SpaceBuddha{
         // Pac gape.
         // render function changes.
         this.gape = 12;
+        this.rotation = false;
     }
     
     render(){
@@ -246,8 +247,10 @@ class Pac extends SpaceBuddha{
         strokeWeight(4);
         translate(  this.myBod.bod.position.x,
                     this.myBod.bod.position.y);
-        
-       // rotate(this.myBod.bod.angle);
+       
+      if (this.rotation)
+       rotate(this.myBod.bod.angle);
+      else rotate(0);
         
         //ellipse(0,0,this.width);
 //        arc(0,0,this.width,this.width*1.01, 

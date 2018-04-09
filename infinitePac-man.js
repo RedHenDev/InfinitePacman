@@ -18,6 +18,8 @@ let boo;
 let origMass = 0;
 let health;
 let resetTime = false;
+let gameOvering = false;
+let GOstamp = 0;
 
 // Variable used in collisions, storing
 // bod to be removed in draw().
@@ -123,7 +125,7 @@ function reset(){
   if (resetTime===false) return;
   resetTime = false;
   health = 32;
-  
+  boo.rotation = false;
   voxGameOver.play();
   
   boo.myBod.makePosition=(Math.round(width/2),
@@ -201,7 +203,11 @@ function myCollision(event){
             if (bodA.label === 'boo' &&
                 bodB.label === 'blinky'){
                 health-=10;
-                if (health < 1) resetTime = true;
+                if (health < 1) {
+                  resetTime = true;
+                  gameOvering = true;
+                  GOstamp = millis();
+                                }
             }
             
             }   // End of forLoop.
@@ -219,6 +225,17 @@ function draw(){
   // Restart the music when needed.
   if (!voxMusic.isPlaying())
     voxMusic.play();
+  
+  if (gameOvering){
+    
+    if (millis()-GOstamp < 2000)
+    {
+      boo.rotation = true;
+    } else {
+      gameOvering = false;
+      boo.rotation = false;
+    }
+  }
   
     skyTint = map(  boo.myBod.bod.position.y,
                     height*3, -height*5, 222, 0);
