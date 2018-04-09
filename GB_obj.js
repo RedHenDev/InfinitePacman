@@ -256,14 +256,14 @@ class Pac extends SpaceBuddha{
 //           PIE);
         
         this.gape +=
-        Math.sin(frameCount/6)
+        Math.sin(frameCount/6)*3
       if (this.gape < 0)
         this.gape = 0;
-      if (this.gape > 51)
-        this.gape = 51;
+      if (this.gape > 64)
+        this.gape = 64;
  
         let orientation = 0;
-        if (this.myBod.bod.velocity.x < 0){
+        if (this.myBod.bod.velocity.x < -0.01){
             orientation = PI;
         }
         
