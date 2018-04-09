@@ -40,14 +40,16 @@ p5.disableFriendlyErrors = true;
 
 //const RP = require('RedHen_2DPhysics');
 
+let voxMusic;
+let voxGobble;
+
 function preload(){
-    //robot = new p5.Speech();
-    // Pick a random voice!
-//function setupVoices(){
-//  let voices = robot.voices;
-//  let voice = random(1,voices.name);
-//  robot.setVoice(voice.name);
-//}
+  
+  //voxMusic = loadSound("sound/song17.mp3");
+  //voxMusic = loadSound("sound/Drift.mp3");
+  //voxMusic = loadSound("sound/interstellarO.ogg");
+  voxMusic = loadSound("sound/Destractor.mp3");
+  voxGobble = loadSound("sound/gobble.mp3");
 }
 
 function setup(){
@@ -94,6 +96,9 @@ function setup(){
     
     rectMode(CENTER);
    
+  // Play music:
+  voxMusic.play();
+  
 }
 
 function setupBoo(){
@@ -156,6 +161,9 @@ function myCollision(event){
 // ***** UDPATE LOOP *****
 function draw(){ 
     
+  if (!voxMusic.isPlaying())
+    voxMusic.play();
+  
     skyTint = map(  boo.myBod.bod.position.y,
                     height*3, -height*5, 222, 0);
     // Orig tints = (0,111,222);
@@ -184,6 +192,9 @@ function draw(){
 //        }
 //        boo.myBod.makeMass(origMass);
         
+      // Sound effect :)
+      voxGobble.play();
+      
         for (let i = 0; i < bods.length; i++){
             if (bods[i].bod.id === toRemove){
             RedHen_2DPhysics.removeObj(i);
@@ -198,12 +209,16 @@ function draw(){
     
     boo.spawnBubbles();
     
+  //blinkiesUpdate();
+  
     push();
     // Move 'camera' to centre on boo.
     translate(  -boo.myBod.bod.position.x+width/2,
                 -boo.myBod.bod.position.y+height/2);
     
      
+  
+  
     
     // Test sea...
     rectMode(CORNER);
@@ -229,9 +244,13 @@ function draw(){
         }
         // When far away, sleep (so as not to
         // fall through the terrain).
-        if (Math.abs(blinkies[i].myBod.bod.position.x
-            - boo.myBod.bod.position.x) > width/2){
+if (Math.abs(blinkies[i].myBod.bod.position.x
+            - boo.myBod.bod.position.x) > width){
             blinkies[i].myBod.makeSleep(true);
+          
+          let newX = boo.myBod.bod.position.x + width/1.5;
+          let newY = blinkies[i].myBod.bod.position.y - boo.myBod.bod.position.y;
+        blinkies[i].myBod.makePosition(newX,newY);
         } else blinkies[i].myBod.makeSleep(false);
     }
     
@@ -270,6 +289,28 @@ function draw(){
     // See frameCount etc.
     printInstructions();
     
+}
+
+function blinkiesUpdate(){
+  for (let i = 0; i < blinkies.length; i++){
+//        blinkies[i].brain.
+//        setWayPoint(boo.myBod.bod.position.x,
+//                    boo.myBod.bod.position.y)
+//        if (!blinkies[i].myBod.bod.isSleeping){
+//        blinkies[i].think();
+//        blinkies[i].render();
+//        }
+        // When far away, sleep (so as not to
+        // fall through the terrain).
+        if (Math.abs(blinkies[i].myBod.bod.position.x
+            - boo.myBod.bod.position.x) > width){
+            blinkies[i].myBod.makeSleep(true);
+          
+          let newX = boo.myBod.bod.position.x + width/1.5;
+          let newY = blinkies[i].myBod.bod.position.y - boo.myBod.bod.position.y;
+        blinkies[i].myBod.makePosition(newX,newY);
+        } else blinkies[i].myBod.makeSleep(false);
+    }
 }
 
 // ***** INPUT and OTHER FUNCTIONS *****
