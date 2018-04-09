@@ -10,6 +10,13 @@ Copyright/Attribution Notice:
 Attribute Little Robot Sound Factory, and provide this link where possible: www.littlerobotsoundfactory.com
 CC BY 3.0
 
+asset links:
+voxGobble = loadSound("https://redhendev.github.io/InfinitePacman/sound/gobble.mp3");
+  
+imgBlinky = loadImage("https://redhendev.github.io/InfinitePacman/blinky.png");
+
+voxGameOver = loadSound("https://redhendev.github.io/InfinitePacman/sound/gameOver.mp3");
+
 
 Happy Lullaby (song17)
 Author: 
