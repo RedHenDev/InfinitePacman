@@ -43,6 +43,8 @@ p5.disableFriendlyErrors = true;
 let voxMusic;
 let voxGobble;
 
+let imgBlinky;
+
 function preload(){
   
   //voxMusic = loadSound("sound/song17.mp3");
@@ -50,6 +52,8 @@ function preload(){
   //voxMusic = loadSound("sound/interstellarO.ogg");
   voxMusic = loadSound("sound/Destractor.mp3");
   voxGobble = loadSound("sound/gobble.mp3");
+  
+  imgBlinky = loadImage("Blinky.png");
 }
 
 function setup(){
@@ -74,12 +78,19 @@ function setup(){
                    Math.random()*100+200));
     }
     
-    // AntBots!
-    for (let i = 0; i < 30; i++){
-        blinkies.push(new antBot(true,
-        Math.random()*width*4-width*2,
-        -height,Math.random()*4+0.3,true));
+    // Blinkies :)
+    for (let i = 0; i < 5; i++){
+       // blinkies.push(new antBot(true,
+        //Math.random()*width*4-width*2,
+        //-height,Math.random()*3+0.7,true));
         
+      blinkies.push(new Blinky(
+        Math.random()*width*4-width*2,
+        -height,
+        Math.random()*3+0.7,
+         imgBlinky));
+     
+      
         // Bubbly air friction :)
         RedHen_2DPhysics.
         lastObjectCreated().bod.frictionAir = 0.1;
@@ -209,16 +220,12 @@ function draw(){
     
     boo.spawnBubbles();
     
-  //blinkiesUpdate();
+  
   
     push();
     // Move 'camera' to centre on boo.
     translate(  -boo.myBod.bod.position.x+width/2,
                 -boo.myBod.bod.position.y+height/2);
-    
-     
-  
-  
     
     // Test sea...
     rectMode(CORNER);
@@ -245,11 +252,11 @@ function draw(){
         // When far away, sleep (so as not to
         // fall through the terrain).
 if (Math.abs(blinkies[i].myBod.bod.position.x
-            - boo.myBod.bod.position.x) > width){
+            - boo.myBod.bod.position.x) > width/1.5){
             blinkies[i].myBod.makeSleep(true);
           
-          let newX = boo.myBod.bod.position.x + width/1.5;
-          let newY = blinkies[i].myBod.bod.position.y - boo.myBod.bod.position.y;
+          let newX = boo.myBod.bod.position.x + width/1.8;
+          let newY = blinkies[i].myBod.bod.position.y - height/2;
         blinkies[i].myBod.makePosition(newX,newY);
         } else blinkies[i].myBod.makeSleep(false);
     }
@@ -291,27 +298,6 @@ if (Math.abs(blinkies[i].myBod.bod.position.x
     
 }
 
-function blinkiesUpdate(){
-  for (let i = 0; i < blinkies.length; i++){
-//        blinkies[i].brain.
-//        setWayPoint(boo.myBod.bod.position.x,
-//                    boo.myBod.bod.position.y)
-//        if (!blinkies[i].myBod.bod.isSleeping){
-//        blinkies[i].think();
-//        blinkies[i].render();
-//        }
-        // When far away, sleep (so as not to
-        // fall through the terrain).
-        if (Math.abs(blinkies[i].myBod.bod.position.x
-            - boo.myBod.bod.position.x) > width){
-            blinkies[i].myBod.makeSleep(true);
-          
-          let newX = boo.myBod.bod.position.x + width/1.5;
-          let newY = blinkies[i].myBod.bod.position.y - boo.myBod.bod.position.y;
-        blinkies[i].myBod.makePosition(newX,newY);
-        } else blinkies[i].myBod.makeSleep(false);
-    }
-}
 
 // ***** INPUT and OTHER FUNCTIONS *****
 function mouseDragged(){

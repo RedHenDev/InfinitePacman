@@ -482,3 +482,26 @@ class antBot {
     
     
 }// End of antBot class.
+
+
+class Blinky extends antBot{
+  constructor(_x, _y, _scale, _image){
+    // True = has matter.js body.
+    // Final true = has antBrain.js :)
+    super (true, _x, _y, _scale, true);
+    
+    this.image = _image;
+  }
+  
+  render(){
+    push();
+        //if (this.hasBod){
+            translate(this.myBod.bod.position.x, this.myBod.bod.position.y);
+            this.pos.x = 0;
+            this.pos.y = 0;
+            rotate(this.myBod.bod.angle);
+            image(this.image,0,0,this.dm*this.scale,this.dm*this.scale);
+       // }
+    pop();
+  }
+}// End of Blinky class :)
