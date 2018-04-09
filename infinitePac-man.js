@@ -16,6 +16,8 @@ let boo;
 // to maintain consistent mass through
 // scale changes.
 let origMass = 0;
+let health;
+let resetTime = false;
 
 // Variable used in collisions, storing
 // bod to be removed in draw().
@@ -40,9 +42,12 @@ p5.disableFriendlyErrors = true;
 
 //const RP = require('RedHen_2DPhysics');
 
+// Sound effects.
 let voxMusic;
 let voxGobble;
+let voxGameOver;
 
+// Images.
 let imgBlinky;
 
 function preload(){
@@ -52,6 +57,7 @@ function preload(){
   //voxMusic = loadSound("sound/interstellarO.ogg");
   voxMusic = loadSound("sound/Destractor.mp3");
   voxGobble = loadSound("sound/gobble.mp3");
+  voxGameOver = loadSound("sound/gameOver.mp3");
   
   imgBlinky = loadImage("Blinky.png");
 }
@@ -59,7 +65,6 @@ function preload(){
 function setup(){
     // Remember to assign value of canvas like this :)
     canvas = createCanvas(windowWidth,windowHeight);
-    background(72);
     
     // Correct for mouse positions.
     mouseX = 0;
@@ -79,7 +84,7 @@ function setup(){
     }
     
     // Blinkies :)
-    for (let i = 0; i < 5; i++){
+    for (let i = 0; i < 10; i++){
        // blinkies.push(new antBot(true,
         //Math.random()*width*4-width*2,
         //-height,Math.random()*3+0.7,true));
@@ -87,9 +92,11 @@ function setup(){
       blinkies.push(new Blinky(
         Math.random()*width*4-width*2,
         -height,
-        Math.random()*3+0.7,
+        Math.random()*5+0.7,
          imgBlinky));
      
+        RedHen_2DPhysics.
+        lastObjectCreated().label('blinky');
       
         // Bubbly air friction :)
         RedHen_2DPhysics.
@@ -112,6 +119,31 @@ function setup(){
   
 }
 
+function reset(){
+  if (resetTime===false) return;
+  resetTime = false;
+  health = 32;
+  
+  voxGameOver.play();
+  
+  boo.myBod.makePosition=(Math.round(width/2),
+                          Math.round(height/2));
+  
+  for (p of blinkies){
+    p.myBod.makePosition(width/2, -height);
+  }
+  
+  while(boo.myBod.bod.circleRadius > 22){
+    boo.myBod.makeScale(0.99);
+    boo.width*=0.99;
+  }
+  boo.myBod.makeMass(origMass);
+  
+  // Regenerate terrain.
+  //urizen = [];
+  //urizen = new GSterrain(22);
+}
+
 function setupBoo(){
     
     boo = new Pac(  Math.round(width/2),
@@ -124,6 +156,9 @@ function setupBoo(){
     //origMass = boo.myBod.bod.mass;
     origMass = 1.499;
     boo.myBod.makeMass(origMass);
+  
+  health = 32;
+  //reset();
 }
 
 function myCollision(event){
@@ -161,7 +196,13 @@ function myCollision(event){
                 //            + ' @ '+ toRemove);
                 
             }
-            
+          
+            // If ghost hits pac...
+            if (bodA.label === 'boo' &&
+                bodB.label === 'blinky'){
+                health-=10;
+                if (health < 1) resetTime = true;
+            }
             
             }   // End of forLoop.
     
@@ -172,6 +213,10 @@ function myCollision(event){
 // ***** UDPATE LOOP *****
 function draw(){ 
     
+  // Will reset game once resetTime is TRUE.
+  reset();
+  
+  // Restart the music when needed.
   if (!voxMusic.isPlaying())
     voxMusic.play();
   
@@ -189,22 +234,26 @@ function draw(){
     // remove anything?
     if (toRemove !== null){
         
-        // First, this must mean that
-        // we can grow/shrink pac-man.
-//        if (boo.myBod.bod.velocity.x > 0 &&
-//            boo.width < width/3){
-//            boo.myBod.makeScale(1.08);
-//            boo.width*=1.08;
-//        }
+         //First, this must mean that
+         //we can grow/shrink pac-man.
+        if (health >= 100 &&
+            boo.myBod.bod.velocity.x > 0 &&
+            boo.width < width/3){
+            boo.myBod.makeScale(1.08);
+            boo.width*=1.08;
+        }
 //        if (boo.myBod.bod.velocity.x < 0 &&
 //            boo.width > 22){
 //            boo.myBod.makeScale(0.8);
 //            boo.width*=0.8;
 //        }
-//        boo.myBod.makeMass(origMass);
+        boo.myBod.makeMass(origMass);
         
       // Sound effect :)
       voxGobble.play();
+      // Gain health point :(
+      health+=1;
+      if (health > 100) health = 100;
       
         for (let i = 0; i < bods.length; i++){
             if (bods[i].bod.id === toRemove){
@@ -255,8 +304,10 @@ if (Math.abs(blinkies[i].myBod.bod.position.x
             - boo.myBod.bod.position.x) > width/1.5){
             blinkies[i].myBod.makeSleep(true);
           
-          let newX = boo.myBod.bod.position.x + width/1.8;
-          let newY = blinkies[i].myBod.bod.position.y - height/2;
+  // Reposition blinkies, so as to seem like
+  // a host of new blinkies.
+          let newX = boo.myBod.bod.position.x + width/1.8 - Math.random()*width/8;
+          let newY = boo.myBod.bod.position.y - height/2 - Math.random()*width/8;
         blinkies[i].myBod.makePosition(newX,newY);
         } else blinkies[i].myBod.makeSleep(false);
     }
@@ -473,20 +524,25 @@ function createDigitBalls(){
 function printInstructions(){
     
     // TextBox test.
-    renderTB(createVector
-    ((width-200)+ 30 * Math.cos(radians(frameCount*3)),
-     64,
-     0),
-    "Bubble alt: " + boo.getAltitude() +
-            "m > SEA");
+//    renderTB(createVector
+//    ((width-200)+ 30 * Math.cos(radians(frameCount*3)),
+//     64,
+//     0),
+//    "Altitude: " + boo.getAltitude() +
+//            "m > SEA");
     
     strokeWeight(2);
-    textSize(14); stroke(0); fill(255); 
-    text("Swipe or use arrow keys to move", 32, 100);
-    text("Position = " + 
-         Math.round(boo.myBod.bod.position.x), 32,32);
+    textSize(20); stroke(0); fill(255,255,0); 
+    text("Swipe or use arrow keys to move", 32, height/10);
+//    text("Position = " + 
+//         Math.round(boo.myBod.bod.position.x), 32,32);
     text("FPS = " + Math.floor(frameRate()), 32,height-32);
     
-    text("Tap/Click to toggle crash bubbles", 32, 64);
+//   textSize(22);
+//  text("Health = " + health, 32, 64);
+  rectMode(CORNER);
+  rect(2,2,width/100*health,height/20);
+  rectMode(CENTER);
+    //text("Tap/Click to toggle crash bubbles", 32, 64);
     
 }
