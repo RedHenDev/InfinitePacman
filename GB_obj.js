@@ -263,7 +263,8 @@ class Pac extends SpaceBuddha{
         this.gape = 64;
  
         let orientation = 0;
-        if (this.myBod.bod.velocity.x < -0.01){
+        if (this.myBod.bod.velocity.x < -0.01
+           && Math.abs(this.myBod.bod.velocity.x) > 0.3){
             orientation = PI;
         }
         

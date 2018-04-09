@@ -12,6 +12,10 @@ let mouseY_prev = 0;
 
 // Our subject.
 let boo;
+// Original mass of pac-boo, so as
+// to maintain consistent mass through
+// scale changes.
+let origMass = 0;
 
 // Variable used in collisions, storing
 // bod to be removed in draw().
@@ -100,6 +104,10 @@ function setupBoo(){
     //robot.speak("Bubble boo is ready.");
     boo.bubblesON = false;
     boo.maxV = 14;
+    
+    //origMass = boo.myBod.bod.mass;
+    origMass = 1.499;
+    boo.myBod.makeMass(origMass);
 }
 
 function myCollision(event){
@@ -161,6 +169,21 @@ function draw(){
     // After collisions, do we need to
     // remove anything?
     if (toRemove !== null){
+        
+        // First, this must mean that
+        // we can grow/shrink pac-man.
+//        if (boo.myBod.bod.velocity.x > 0 &&
+//            boo.width < width/3){
+//            boo.myBod.makeScale(1.08);
+//            boo.width*=1.08;
+//        }
+//        if (boo.myBod.bod.velocity.x < 0 &&
+//            boo.width > 22){
+//            boo.myBod.makeScale(0.8);
+//            boo.width*=0.8;
+//        }
+//        boo.myBod.makeMass(origMass);
+        
         for (let i = 0; i < bods.length; i++){
             if (bods[i].bod.id === toRemove){
             RedHen_2DPhysics.removeObj(i);
