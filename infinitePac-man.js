@@ -19,6 +19,7 @@ let origMass = 0;
 let health;
 let resetTime = false;
 let gameOvering = false;
+let gameWon = false;
 let GOstamp = 0;
 
 // Variable used in collisions, storing
@@ -71,6 +72,7 @@ function preload(){
   voxGameOver = loadSound("sound/gameOver.mp3");
   voxPower = loadSound("sound/powerUp.mp3");
   voxHit = loadSound("sound/hit.mp3");
+  voxWin = loadSound("sound/song17.mp3");
   
   imgBlinky = loadImage("blinky.png");
   imgBlinkyS = loadImage("blinkyS.png");
@@ -226,9 +228,11 @@ function myCollision(event){
                 // in blinkieUpdate() using toEat.
                   health+=5;
                 toEat = bodB.id;
-              } else {
-                  health-=10;
-                  if (!voxHit.isPlaying()){
+              } else  {
+                  if (!gameWon){
+                  health-=10;}
+                  if (!voxHit.isPlaying() &&
+                      !gameWon){
                     voxHit.play();
                     voxHit.setVolume(0.4);
                   }
@@ -268,17 +272,22 @@ function draw(){
   reset();
   
   // Restart the music when needed.
-  if (!voxMusic.isPlaying()){
+  // Or stop if GAME WON.
+  if (!voxMusic.isPlaying() && !gameWon){
     voxMusic.play();
     voxMusic.setVolume(0.04);
-  }
+  } else if (voxMusic.isPlaying() &&
+            gameWon) voxMusic.stop();
+  
+  if (!voxWin.isPlaying() && gameWon)
+    voxWin.play();
   
   if (gameOvering){
     
     if (millis()-GOstamp < 2000)
     {
       boo.rotation = true;
-    } else {
+    } else if (!gameWon) {
       gameOvering = false;
       boo.rotation = false;
     }
@@ -307,6 +316,14 @@ function draw(){
             boo.width < width/3){
             boo.myBod.makeScale(1.08);
             boo.width*=1.08;
+          
+            if (boo.width > width/3){
+              // GAME WON!
+              gameWon = true;
+              boo.rotation = true;
+              //voxWin.play();
+            }
+          
         }
 //        if (boo.myBod.bod.velocity.x < 0 &&
 //            boo.width > 22){
@@ -364,6 +381,7 @@ function draw(){
     updateClouds();
     
     urizen.renderTerrain();
+    
     
     updateBlinkies();
     
@@ -662,6 +680,7 @@ function printInstructions(){
 //    "Altitude: " + boo.getAltitude() +
 //            "m > SEA");
     
+  if (!gameWon){
     strokeWeight(2);
     textSize(20); stroke(0); fill(255,255,0); 
     text("Swipe or use arrow keys to move", 32, height/10);
@@ -675,5 +694,6 @@ function printInstructions(){
   rect(2,2,width/100*health,height/20);
   rectMode(CENTER);
     //text("Tap/Click to toggle crash bubbles", 32, 64);
+  }
     
 }

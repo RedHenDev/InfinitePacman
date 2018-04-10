@@ -403,7 +403,7 @@ class Gstalk{
           }
           
           RedHen_2DPhysics.newObj('circle', this.myBody.bod.position.x, this.myBody.bod.position.y - 
-            (64 - Math.random()*32) 
+            (100 - Math.random()*32) 
             - height*1.5, pelletSize);
            
             // Switch OFF 'off-screen-remove'.
@@ -413,7 +413,7 @@ class Gstalk{
             RedHen_2DPhysics.lastObjectCreated().
             label(pLabel);
             
-            // Colour of pellet.
+            // Colour of pellet/power-pellet.
            if (!powerUp){
   RedHen_2DPhysics.lastObjectCreated()
     .fill = color(255,255,0);
@@ -423,11 +423,11 @@ class Gstalk{
     .stroke = color(0);
            } else {
              RedHen_2DPhysics.lastObjectCreated()
-    .fill = color(0);
+    .fill = color(185,185,0);
   RedHen_2DPhysics.lastObjectCreated()
-    .strokeWeight = 3;
+    .strokeWeight = 2;
   RedHen_2DPhysics.lastObjectCreated()
-    .stroke = color(255,255);
+    .stroke = color(0);
            }
             
            
