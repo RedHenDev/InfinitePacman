@@ -24,6 +24,9 @@ let GOstamp = 0;
 // Variable used in collisions, storing
 // bod to be removed in draw().
 let toRemove = null;
+// Which blinkie to eat, sent to sleep in 
+// updateBlinkies().
+let toEat = null;
 
 let blinkies = [];
 let scared = false; // Blinkies scared?
@@ -51,6 +54,8 @@ p5.disableFriendlyErrors = true;
 let voxMusic;
 let voxGobble;
 let voxGameOver;
+let voxPower;
+let voxHit;
 
 // Images.
 let imgBlinky;
@@ -64,6 +69,8 @@ function preload(){
   voxMusic = loadSound("sound/Destractor.mp3");
   voxGobble = loadSound("sound/gobble.mp3");
   voxGameOver = loadSound("sound/gameOver.mp3");
+  voxPower = loadSound("sound/powerUp.mp3");
+  voxHit = loadSound("sound/hit.mp3");
   
   imgBlinky = loadImage("blinky.png");
   imgBlinkyS = loadImage("blinkyS.png");
@@ -124,6 +131,7 @@ function setup(){
    
   // Play music:
   voxMusic.play();
+  voxMusic.setVolume(0.04);
   
 }
 
@@ -132,7 +140,9 @@ function reset(){
   resetTime = false;
   health = 32;
   boo.rotation = false;
+  
   voxGameOver.play();
+  voxGameOver.setVolume(0.1);
   
   boo.myBod.makePosition=(Math.round(width/2),
                           Math.round(height/2));
@@ -208,7 +218,24 @@ function myCollision(event){
             // If ghost hits pac...
             if (bodA.label === 'boo' &&
                 bodB.label === 'blinky'){
-                health-=10;
+                
+              // Scared mode?
+              if (blinkies[0].scared){
+                // Grab id of this blinkie.
+                // Will be 'eaten' (not removed)
+                // in blinkieUpdate() using toEat.
+                  health+=5;
+                toEat = bodB.id;
+              } else {
+                  health-=10;
+                  if (!voxHit.isPlaying()){
+                    voxHit.play();
+                    voxHit.setVolume(0.4);
+                  }
+                    
+                }
+              
+                // GAME OVER?
                 if (health < 1) {
                   resetTime = true;
                   gameOvering = true;
@@ -226,11 +253,8 @@ function myCollision(event){
               
             }
           
-            
             }   // End of forLoop.
-    
-            
-                
+         
 }
 
 // ***** UDPATE LOOP *****
@@ -240,14 +264,14 @@ function draw(){
 //    blinkies[0].scared = true;
 //  }
   
-  
-  
   // Will reset game once resetTime is TRUE.
   reset();
   
   // Restart the music when needed.
-  if (!voxMusic.isPlaying())
+  if (!voxMusic.isPlaying()){
     voxMusic.play();
+    voxMusic.setVolume(0.04);
+  }
   
   if (gameOvering){
     
@@ -260,10 +284,12 @@ function draw(){
     }
   }
   
+    if (!gameOvering){
     skyTint = map(  boo.myBod.bod.position.y,
                     height*3, -height*5, 222, 0);
     // Orig tints = (0,111,222);
     background(0,skyTint/2,skyTint);
+    } else background(0,32);
     
     // Spit blocks if boo in correct area.
 //    if (boo.myBod.bod.position.x > -700 &&
@@ -288,15 +314,26 @@ function draw(){
 //            boo.width*=0.8;
 //        }
         boo.myBod.makeMass(origMass);
-        
-      // Sound effect :)
-      voxGobble.play();
-      // Gain health point :(
-      health+=1;
-      if (health > 100) health = 100;
       
         for (let i = 0; i < bods.length; i++){
             if (bods[i].bod.id === toRemove){
+              
+              // What did we just eat?
+              if (bods[i].bod.label === 'pellet'){
+                // Sound effect :)
+                voxGobble.play();
+                voxGobble.setVolume(0.1);
+                // Gain health point :(
+                health+=1;
+                if (health > 100) health = 100;
+              }
+              
+              if (bods[i].bod.label === 'eatMe'){
+                voxPower.play();
+                voxPower.setVolume(0.1);
+                // No health gained with powerUp.
+              }
+              
             RedHen_2DPhysics.removeObj(i);
             break;
             }
@@ -304,13 +341,11 @@ function draw(){
         
         toRemove = null;
     }
-    
   
     
-    boo.spawnBubbles();
+    //boo.spawnBubbles();
     
-  
-  
+
     push();
     // Move 'camera' to centre on boo.
     translate(  -boo.myBod.bod.position.x+width/2,
@@ -395,21 +430,47 @@ function updateBlinkies(){
   }
   
   
+  // Waypoint setting.
+  let wpY = boo.myBod.bod.position.y;
+  let wpX = boo.myBod.bod.position.x;
+  
+  // If scared, set waypoint high in air.
+  if (blinkies[0].scared){
+    wpY = -height;
+  }
+  
   
   for (let i = 0; i < blinkies.length; i++){
+    
+        // First, set new waypoint using 'brain'.
         blinkies[i].brain.
-        setWayPoint(boo.myBod.bod.position.x,
-                    boo.myBod.bod.position.y)
+        setWayPoint(wpX+ Math.random()*50,
+                    wpY);
+    
+        // If eaten, set me high and sleeping.
+          if (toEat !== null &&
+              blinkies[i].myBod.bod.id ===
+              toEat){
+                blinkies[i].myBod.makeSleep(true);
+            blinkies[i].myBod.makePosition(0,0);
+              toEat = null;
+              // Louder 'gobble' sound effect.
+              voxGobble.play();
+              voxGobble.setVolume(0.4);
+            }
+    
+        // If not sleeping...'think' and render.
         if (!blinkies[i].myBod.bod.isSleeping){
         blinkies[i].think();
         blinkies[i].render();
         }
-        // When far away, sleep (so as not to
+        
+    // When far away, sleep (so as not to
         // fall through the terrain).
-if (Math.abs(blinkies[i].myBod.bod.position.x
-            - boo.myBod.bod.position.x) > width/1.5){
-            blinkies[i].myBod.makeSleep(true);
-          
+        if (Math.abs(blinkies[i].myBod.bod.
+            position.x - 
+            boo.myBod.bod.position.x) > width/1.5){
+            blinkies[i].myBod.makeSleep(true); 
   // Reposition blinkies, so as to seem like
   // a host of new blinkies.
           let newX = boo.myBod.bod.position.x + width/1.8 - Math.random()*width/8;

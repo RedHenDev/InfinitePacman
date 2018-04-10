@@ -391,7 +391,6 @@ class Gstalk{
         
         if(this.myBody.bod.position.y < height*7 &&
           id % 5 === 0) {
-           
           
           let pelletSize = 12;
           let chance = Math.random();
