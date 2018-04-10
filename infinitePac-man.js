@@ -26,9 +26,12 @@ let GOstamp = 0;
 let toRemove = null;
 
 let blinkies = [];
+let scared = false; // Blinkies scared?
+let scaredTime;     // TimeStamp for scared.
 
 // To organise tint of sky.
 let skyTint;
+
 
 // Testing new terrain generator...
 let urizen;
@@ -61,7 +64,8 @@ function preload(){
   voxGobble = loadSound("sound/gobble.mp3");
   voxGameOver = loadSound("sound/gameOver.mp3");
   
-  imgBlinky = loadImage("Blinky.png");
+  imgBlinky = loadImage("blinky.png");
+  imgBlinkyS = loadImage("blinkyS.png");
 }
 
 function setup(){
@@ -95,7 +99,8 @@ function setup(){
         Math.random()*width*4-width*2,
         -height,
         Math.random()*5+0.7,
-         imgBlinky));
+          imgBlinky,
+          imgBlinkyS));
      
         RedHen_2DPhysics.
         lastObjectCreated().label('blinky');
@@ -209,6 +214,17 @@ function myCollision(event){
                   GOstamp = millis();
                                 }
             }
+          
+          // If pac eats super pellet...
+            if (bodA.label === 'boo' &&
+                bodB.label === 'eatMe'){
+             
+              // Turn on SCARED mode.
+              scared = true;
+              toRemove = bodB.id;
+              
+            }
+          
             
             }   // End of forLoop.
     
@@ -219,6 +235,12 @@ function myCollision(event){
 // ***** UDPATE LOOP *****
 function draw(){ 
     
+//  if (keyIsDown(32)){
+//    blinkies[0].scared = true;
+//  }
+  
+  
+  
   // Will reset game once resetTime is TRUE.
   reset();
   
@@ -307,27 +329,7 @@ function draw(){
     
     urizen.renderTerrain();
     
-    for (let i = 0; i < blinkies.length; i++){
-        blinkies[i].brain.
-        setWayPoint(boo.myBod.bod.position.x,
-                    boo.myBod.bod.position.y)
-        if (!blinkies[i].myBod.bod.isSleeping){
-        blinkies[i].think();
-        blinkies[i].render();
-        }
-        // When far away, sleep (so as not to
-        // fall through the terrain).
-if (Math.abs(blinkies[i].myBod.bod.position.x
-            - boo.myBod.bod.position.x) > width/1.5){
-            blinkies[i].myBod.makeSleep(true);
-          
-  // Reposition blinkies, so as to seem like
-  // a host of new blinkies.
-          let newX = boo.myBod.bod.position.x + width/1.8 - Math.random()*width/8;
-          let newY = boo.myBod.bod.position.y - height/2 - Math.random()*width/8;
-        blinkies[i].myBod.makePosition(newX,newY);
-        } else blinkies[i].myBod.makeSleep(false);
-    }
+    updateBlinkies();
     
     RedHen_2DPhysics.updateObjs();
     
@@ -366,6 +368,56 @@ if (Math.abs(blinkies[i].myBod.bod.position.x
     
 }
 
+function updateBlinkies(){
+  
+  // Turn on scared mode?
+  if (scared){
+    scaredTime = millis();
+    scared = false;
+    
+    // Make sure all blinkies are in
+    // scared mode.
+    for (let i = 0; i < blinkies.length; i++){
+      blinkies[i].scared = true;
+    }
+  }
+  
+  // Time to switch off scared mode?
+  if (scaredTime !== 0 && millis() - 
+      scaredTime > 5000){
+    // Make sure all blinkies are not in
+    // scared mode.
+    for (let i = 0; i < blinkies.length; i++){
+      blinkies[i].scared = false;
+    }
+    scaredTime = 0;
+  }
+  
+  
+  
+  for (let i = 0; i < blinkies.length; i++){
+        blinkies[i].brain.
+        setWayPoint(boo.myBod.bod.position.x,
+                    boo.myBod.bod.position.y)
+        if (!blinkies[i].myBod.bod.isSleeping){
+        blinkies[i].think();
+        blinkies[i].render();
+        }
+        // When far away, sleep (so as not to
+        // fall through the terrain).
+if (Math.abs(blinkies[i].myBod.bod.position.x
+            - boo.myBod.bod.position.x) > width/1.5){
+            blinkies[i].myBod.makeSleep(true);
+          
+  // Reposition blinkies, so as to seem like
+  // a host of new blinkies.
+          let newX = boo.myBod.bod.position.x + width/1.8 - Math.random()*width/8;
+          let newY = boo.myBod.bod.position.y - height/2 - Math.random()*width/8;
+        blinkies[i].myBod.makePosition(newX,newY);
+        } else blinkies[i].myBod.makeSleep(false);
+    }
+  
+}
 
 // ***** INPUT and OTHER FUNCTIONS *****
 function mouseDragged(){

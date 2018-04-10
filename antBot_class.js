@@ -485,12 +485,17 @@ class antBot {
 
 
 class Blinky extends antBot{
-  constructor(_x, _y, _scale, _image){
+  constructor(_x, _y, _scale, _image, _imageS){
     // True = has matter.js body.
     // Final true = has antBrain.js :)
     super (true, _x, _y, _scale, true);
     
-    this.image = _image;
+    // Our textures.
+    this.image = _image;    // Normal.
+    this.imageS = _imageS;  // Scared.
+    
+    // Lets us know how to draw Blinky.
+    this.scared = false;
   }
   
   render(){
@@ -500,7 +505,11 @@ class Blinky extends antBot{
             this.pos.x = 0;
             this.pos.y = 0;
             rotate(this.myBod.bod.angle);
-            image(this.image,0,0,this.dm*this.scale,this.dm*this.scale);
+           
+    let whichImage = this.image;
+    if (this.scared) whichImage =
+                    this.imageS;  
+       image(whichImage,0,0,this.dm*this.scale,this.dm*this.scale);
        // }
     pop();
   }

@@ -391,26 +391,47 @@ class Gstalk{
         
         if(this.myBody.bod.position.y < height*7 &&
           id % 5 === 0) {
-            RedHen_2DPhysics.newObj('circle', this.myBody.bod.position.x, this.myBody.bod.position.y - 
+           
+          
+          let pelletSize = 12;
+          let chance = Math.random();
+          let powerUp = false;
+          let pLabel = "pellet";
+          if (chance < 0.03){
+            powerUp = true;
+            pLabel = "eatMe";
+            pelletSize = 24;
+          }
+          
+          RedHen_2DPhysics.newObj('circle', this.myBody.bod.position.x, this.myBody.bod.position.y - 
             (64 - Math.random()*32) 
-            - height*1.5, 12);
+            - height*1.5, pelletSize);
            
             // Switch OFF 'off-screen-remove'.
         RedHen_2DPhysics.lastObjectCreated().OSR = false;
            
             // Label for collisions...
             RedHen_2DPhysics.lastObjectCreated().
-            label('pellet');
+            label(pLabel);
             
             // Colour of pellet.
-            RedHen_2DPhysics.lastObjectCreated().
-            fill = color(255,255,0);
+           if (!powerUp){
+  RedHen_2DPhysics.lastObjectCreated()
+    .fill = color(255,255,0);
+  RedHen_2DPhysics.lastObjectCreated()
+    .strokeWeight = 3;
+  RedHen_2DPhysics.lastObjectCreated()
+    .stroke = color(0);
+           } else {
+             RedHen_2DPhysics.lastObjectCreated()
+    .fill = color(0);
+  RedHen_2DPhysics.lastObjectCreated()
+    .strokeWeight = 3;
+  RedHen_2DPhysics.lastObjectCreated()
+    .stroke = color(255,255);
+           }
             
-            RedHen_2DPhysics.lastObjectCreated().
-            stroke = color(0);
-            
-            RedHen_2DPhysics.lastObjectCreated().
-            strokeWeight = 3;
+           
             
             // Freeze position of object.
 //            RedHen_2DPhysics.lastObjectCreated().
