@@ -54,6 +54,7 @@ let voxGameOver;
 
 // Images.
 let imgBlinky;
+let imgBlinkyS;
 
 function preload(){
   
