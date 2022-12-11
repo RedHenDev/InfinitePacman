@@ -520,7 +520,9 @@ function mouseDragged(){
 }
 
 function touchEnded(){
-    
+    // AudioContext.
+    getAudioContext();  
+
     if (canSpawn){
         boo.bubblesON = !boo.bubblesON;
 //        if (boo.bubblesON)
